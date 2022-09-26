@@ -383,58 +383,66 @@ function loadStatsData() {
     .done(function (data) {
       $.each(data.pools, function (index, value) {
         if (currentPool === value.id) {
-          var ttf = Math.round(
-            (value.networkStats.networkHashrate /
-              value.poolStats.poolHashrate) *
-              value.blockTimeInterval
-          );
-          var effort = (
-            (value.poolStats.sharesDiff /
-              value.networkStats.networkDifficulty) *
-            100
-          ).toFixed(2);
-          var lastPoolBlock = convertUTCDateToLocalDate(
-            new Date(value.lastPoolBlockTime),
-            false
-          );
-          var convertedBlockDate = dateConvertor(lastPoolBlock);
-          $("#coinName").text(value.coin.name);
-          $("#coinAlgo").text(value.coin.algorithm);
-          $("#blockchainHeight").text(value.networkStats.blockHeight);
-          $("#connectedPeers").text(value.networkStats.connectedPeers);
-          $("#minimumPayment").text(
-            value.paymentProcessing.minimumPayment + " " + value.coin.type
-          );
-          $("#payoutScheme").text(value.paymentProcessing.payoutScheme);
-          $("#poolFeePercent").text(value.poolFeePercent + " %");
-          $("#poolHashrate").text(
-            _formatter(value.poolStats.poolHashrate, 5, "H/s")
-          );
-          $("#poolMiners").text(value.poolStats.connectedMiners + " Miner(s)");
-          $("#poolWorkers").text(
-            value.poolStats.connectedWorkers + " Worker(s)"
-          );
-          $("#networkHashrate").text(
-            _formatter(value.networkStats.networkHashrate, 3, "H/s")
-          );
-          $("#netHashrate").text(
-            _formatter(value.networkStats.networkHashrate, 3, "H/s")
-          );
-          $("#networkDifficulty").text(
-            _formatter(value.networkStats.networkDifficulty, 3, "H/s")
-          );
-          $("#netDifficulty").text(
-            _formatter(value.networkStats.networkDifficulty, 3, "H/s")
-          );
-          $("#poolTTF").text(readableSeconds(ttf));
-          $("#poolEffort").text(effort + " %");
-          $("#poolPaymentInterval").text(
-            readableSeconds(value.paymentProcessing.extra.paymentInterval)
-          );
-          $("#currentShares").text(
-            _formatter(value.poolStats.sharesDiff, 5, "")
-          );
-          $("#lastPoolBlock").text(convertedBlockDate);
+          $.ajax(API + `pools/${value.id}`)
+          .done(function (poolData) {
+            let difficulties = poolData.difficulties.filter(p => p.poolId == value.id);
+            if(difficulties.length != 0)
+            {
+              value.poolStats.sharesDiff = difficulties[0].difficulty;
+            }
+            var ttf = Math.round(
+              (value.networkStats.networkHashrate /
+                value.poolStats.poolHashrate) *
+                value.blockTimeInterval
+            );
+            var effort = (
+              (value.poolStats.sharesDiff /
+                value.networkStats.networkDifficulty) *
+              100
+            ).toFixed(2);
+            var lastPoolBlock = convertUTCDateToLocalDate(
+              new Date(value.lastPoolBlockTime),
+              false
+            );
+            var convertedBlockDate = dateConvertor(lastPoolBlock);
+            $("#coinName").text(value.coin.name);
+            $("#coinAlgo").text(value.coin.algorithm);
+            $("#blockchainHeight").text(value.networkStats.blockHeight);
+            $("#connectedPeers").text(value.networkStats.connectedPeers);
+            $("#minimumPayment").text(
+              value.paymentProcessing.minimumPayment + " " + value.coin.type
+            );
+            $("#payoutScheme").text(value.paymentProcessing.payoutScheme);
+            $("#poolFeePercent").text(value.poolFeePercent + " %");
+            $("#poolHashrate").text(
+              _formatter(value.poolStats.poolHashrate, 5, "H/s")
+            );
+            $("#poolMiners").text(value.poolStats.connectedMiners + " Miner(s)");
+            $("#poolWorkers").text(
+              value.poolStats.connectedWorkers + " Worker(s)"
+            );
+            $("#networkHashrate").text(
+              _formatter(value.networkStats.networkHashrate, 3, "H/s")
+            );
+            $("#netHashrate").text(
+              _formatter(value.networkStats.networkHashrate, 3, "H/s")
+            );
+            $("#networkDifficulty").text(
+              _formatter(value.networkStats.networkDifficulty, 3, "H/s")
+            );
+            $("#netDifficulty").text(
+              _formatter(value.networkStats.networkDifficulty, 3, "H/s")
+            );
+            $("#poolTTF").text(readableSeconds(ttf));
+            $("#poolEffort").text(effort + " %");
+            $("#poolPaymentInterval").text(
+              readableSeconds(value.paymentProcessing.extra.paymentInterval)
+            );
+            $("#currentShares").text(
+              _formatter(value.poolStats.sharesDiff, 5, "")
+            );
+            $("#lastPoolBlock").text(convertedBlockDate);
+          })
         }
       });
     })
