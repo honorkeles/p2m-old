@@ -718,7 +718,14 @@ function loadDashboardData(walletAddress) {
       $.each(data.pools, function (index, value) {
         if (currentPool === value.id) {
           poolhash = value.poolStats.poolHashrate;
-          poolshares = value.poolStats.sharesDiff;
+          $.ajax(API + `pools/${value.id}`)
+          .done(function (poolData) {
+            let difficulties = poolData.difficulties.filter(p => p.poolId == value.id);
+            if(difficulties.length != 0)
+            {
+              value.poolStats.sharesDiff = difficulties[0].difficulty;
+            }})
+            poolshares = value.poolStats.sharesDiff;
         }
       });
     }),
