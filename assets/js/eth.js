@@ -724,8 +724,8 @@ function loadDashboardData(walletAddress) {
             if(difficulties.length != 0)
             {
               value.poolStats.sharesDiff = difficulties[0].difficulty;
+              poolshares = value.poolStats.sharesDiff;
             }})
-            poolshares = value.poolStats.sharesDiff;
         }
       });
     }),
